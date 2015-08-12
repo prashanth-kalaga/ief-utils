@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/gupta-tarun/ief-utils"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "lodash": "2.4.1",
     "async" : "1.4.0",
