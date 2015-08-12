@@ -1,12 +1,15 @@
 {
   "name": "ief-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Integrator Extension Framework Utilities",
-  "main" : "utils.js",
+  "main": "utils.js",
   "engines": {
     "node": "0.10.x"
   },
-  "author": "Tarun Gupta <tarun.gupta@celigo.com>",
+  "author": {
+    "name": "Tarun Gupta",
+    "email": "tarun.gupta@celigo.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gupta-tarun/ief-utils"
@@ -14,9 +17,35 @@
   "private": false,
   "dependencies": {
     "lodash": "2.4.1",
-    "async" : "1.4.0",
-    "JSONPath" : "0.10.0",
+    "async": "1.4.0",
+    "JSONPath": "0.10.0",
     "request": "2.38.0",
     "winston": "0.7.3"
-  }
+  },
+  "gitHead": "ce87f488885ddd5b978d9fbc7134305c7e3e9564",
+  "bugs": {
+    "url": "https://github.com/gupta-tarun/ief-utils/issues"
+  },
+  "homepage": "https://github.com/gupta-tarun/ief-utils",
+  "_id": "ief-utils@0.0.1",
+  "scripts": {},
+  "_shasum": "bdb97138028987e6cc68cd526a815f3e79aea6fc",
+  "_from": "ief-utils@0.0.1",
+  "_npmVersion": "1.4.28",
+  "_npmUser": {
+    "name": "gupta-tarun",
+    "email": "tarunzweb@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "gupta-tarun",
+      "email": "tarunzweb@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "bdb97138028987e6cc68cd526a815f3e79aea6fc",
+    "tarball": "http://registry.npmjs.org/ief-utils/-/ief-utils-0.0.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/ief-utils/-/ief-utils-0.0.1.tgz"
 }

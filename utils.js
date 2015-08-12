@@ -22,12 +22,14 @@ var createRecordsInOrder = function (recordarray, options, callback) {
     var temprecord;
     for(temprecord in recordarray){
         //for each record load file from fs into variable info
-        if(!recordarray[temprecord].filelocation){
+        if(! (recordarray[temprecord].filelocation || recordarray[temprecord].isLoaded) ) {
             return callback(new Error('Config Error: no filelocation given in record : '+temprecord));
         }
-        recordarray[temprecord].info = require(recordarray[temprecord].filelocation);
-        //add bearer token in info node
-        recordarray[temprecord].info.bearerToken = options.bearerToken;
+        if(!recordarray[temprecord].isLoaded){
+            recordarray[temprecord].info = require(recordarray[temprecord].filelocation);
+            //add bearer token in info node
+            recordarray[temprecord].info.bearerToken = options.bearerToken;
+        }
     }
     //while every dependency is not resolved
     makeAsyncCalls(recordarray, callback);
@@ -66,6 +68,11 @@ var createRecordsInOrder = function (recordarray, options, callback) {
       }else if(!!options.data){
         opts.method = 'POST';
         opts.json = options.data;
+        //if data cotains _id that means it is a put call
+        if(options.data._id){
+            opts.uri = opts.uri + '/' + options.data._id;
+            opts.method = 'PUT';
+        }
       }
       //logInSplunk('REST call : method|' + opts.method + ', uri|' + opts.uri);
       //logInSplunk('call : \n'+JSON.stringify(opts));
@@ -76,7 +83,7 @@ var createRecordsInOrder = function (recordarray, options, callback) {
 ;
 
 var verifyDependency = function (recordarray, record) {
-        logInSplunk('verifyDependency ');
+        //logInSplunk('verifyDependency ');
         //get the dependency array and check if all are resolved in a loop
         var i;
         if(!recordarray[record].dependson || recordarray[record].dependson.length === 0){
@@ -84,7 +91,7 @@ var verifyDependency = function (recordarray, record) {
             return true;
         }
         for (i = 0; i < recordarray[record].dependson.length; i = i + 1) {
-            logInSplunk('verifyDependency : i '+i)
+            //logInSplunk('verifyDependency : i '+i)
             if (!recordarray[record].dependson[i].resolved) {
                 return false;
             }
@@ -98,6 +105,7 @@ var verifyDependency = function (recordarray, record) {
 //            "record" : "connection-netsuite",
 //            "readfrom" : "$._id",
 //            "writeto"  : "_connectionId"
+//             "writetopath" : "the json path to node where we want to add writeto"
 //       }
         for (i = 0; i < recordarray[record].info.jsonpath.length; i = i + 1) {
             var temp = recordarray[record].info.jsonpath[i];
@@ -109,10 +117,21 @@ var verifyDependency = function (recordarray, record) {
             tempvalue = tempvalue[0];
             //set in record
             //TODO: Add support for nested value writes
-            recordarray[record].info.data[temp.writeto] = tempvalue;
+            //if it doesn't start with $ mean no need to run JSONPath eval on writeto
+            var tempWriteto;
+            if(temp.writetopath){
+                tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
+                if(tempWriteto.length <= 0 ){
+                    throw new Error('Unable to find jsonpath '+temp.writeto+ ' in '+ JSON.stringify(recordarray[record].info.data));
+                }
+                tempWriteto = tempWriteto[0];
+            }else{
+                tempWriteto = recordarray[record].info.data;
+            }
+            tempWriteto[temp.writeto] = tempvalue;
             logInSplunk('setting ' + temp.writeto + ' as ' + tempvalue );
         }
-        logInSplunk('After dependecy resolution record : ' + JSON.stringify(recordarray[record].info.data) );
+        //logInSplunk('After dependecy resolution record : ' + JSON.stringify(recordarray[record].info.data) );
         return true;
     },
     verifyACircular = function (graph) {
@@ -174,11 +193,11 @@ var verifyDependency = function (recordarray, record) {
             integratorRestClient(record.info, function( err, response, body ){
                 //logInSplunk('Posting record : ' + JSON.stringify(body));
                 if(err){
-                    logInSplunk('Error1 : ');
+                    //logInSplunk('Error1 : ');
                     return cb(new Error('Error while connecting to Integrator.io'));
                 }
                 if(!verifyResponse(response)){
-                    logInSplunk('Error2 : ');
+                    //logInSplunk('Error2 : ');
                     return cb(new Error('Unable to verify response'));
                 }
                 //this mean call was successful, now go and save the info at location info.response
@@ -195,7 +214,7 @@ var verifyDependency = function (recordarray, record) {
             if(err){
                 return callback(new Error(JSON.stringify(err)));
             }//everything is successful for this batch let create another
-            logInSplunk('calling async');
+            //logInSplunk('calling async');
             makeAsyncCalls(recordarray, callback);
         })
     }
