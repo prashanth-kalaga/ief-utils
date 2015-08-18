@@ -26,6 +26,9 @@ var createRecordsInOrder = function (recordarray, options, callback) {
             return callback(new Error('Config Error: no filelocation given in record : '+temprecord));
         }
         if(!recordarray[temprecord].isLoaded){
+           if (require.cache) {
+                delete require.cache[require.resolve(recordarray[temprecord].filelocation)];
+            }
             recordarray[temprecord].info = require(recordarray[temprecord].filelocation);
             //add bearer token in info node
             recordarray[temprecord].info.bearerToken = options.bearerToken;
