@@ -4,7 +4,7 @@
   "description": "Integrator Extension Framework Utilities",
   "main": "utils.js",
   "engines": {
-    "node": "0.10.x"
+    "node": "0.12.x"
   },
   "author": {
     "name": "Tarun Gupta",
@@ -17,7 +17,7 @@
   "private": false,
   "dependencies": {
     "lodash": "2.4.1",
-    "async": "1.4.0",
+    "async": "1.4.2",
     "JSONPath": "0.10.0",
     "request": "2.38.0",
     "winston": "0.7.3"
