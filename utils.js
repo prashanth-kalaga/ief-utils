@@ -1,11 +1,11 @@
 /*jslint nomen: true*/
 /*global _ */
 
-var _ = require('lodash'),
-  async = require('async'),
-  jsonPath = require('JSONPath'),
-  request = require('request'),
-  logger = require('winston');
+var _ = require('lodash')
+  , async = require('async')
+  , jsonPath = require('JSONPath')
+  , request = require('request')
+  , logger = require('winston');
 
 var HERCULES_BASE_URL = 'https://api.integrator.io';
 if (process.env.NODE_ENV !== 'production') {
@@ -37,8 +37,8 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     }
     //while every dependency is not resolved
     makeAsyncCalls(recordarray, callback);
-  },
-  /**
+  }
+  , /**
    *   signature :
    *   options [{bearerToken, resourcetype, id, data}]
    *   callback
@@ -54,13 +54,13 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     }
     //console.log('calling integrator for '+options.resourcetype);
     var opts = {
-      uri: HERCULES_BASE_URL + '/v1/' + options.resourcetype,
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + options.bearerToken,
-        'Content-Type': 'application/json'
-      },
-      json: true
+      uri: HERCULES_BASE_URL + '/v1/' + options.resourcetype
+      , method: 'GET'
+      , headers: {
+        Authorization: 'Bearer ' + options.bearerToken
+        , 'Content-Type': 'application/json'
+      }
+      , json: true
     };
 
     if (!!options.id) {
@@ -69,6 +69,9 @@ var createRecordsInOrder = function(recordarray, options, callback) {
         opts.method = 'PUT';
         opts.json = options.data;
       }
+      if (!!options.distributed) {
+        opts.uri = opts.uri + '/distributed'
+      }
     } else if (!!options.data) {
       opts.method = 'POST';
       opts.json = options.data;
@@ -76,6 +79,9 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       if (options.data._id) {
         opts.uri = opts.uri + '/' + options.data._id;
         opts.method = 'PUT';
+      }
+      if (!!options.distributed) {
+        opts.uri = opts.uri + '/distributed'
       }
     }
     //logInSplunk('REST call : method|' + opts.method + ', uri|' + opts.uri);
@@ -90,8 +96,8 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       //this means success
       return callback(null, res, body);
     });
-  },
-  integratorApiIdentifierClient = function(options, callback) {
+  }
+  , integratorApiIdentifierClient = function(options, callback) {
     if (!options.bearerToken) {
       logInSplunk('No Auth Token was provided!');
       return callback(new Error('No Auth Token was provided!'));
@@ -102,13 +108,13 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     }
 
     var opts = {
-      uri: HERCULES_BASE_URL + '/' + options.apiIdentifier,
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + options.bearerToken,
-        'Content-Type': 'application/json'
-      },
-      json: true
+      uri: HERCULES_BASE_URL + '/' + options.apiIdentifier
+      , method: 'POST'
+      , headers: {
+        Authorization: 'Bearer ' + options.bearerToken
+        , 'Content-Type': 'application/json'
+      }
+      , json: true
     };
 
     if (!!options.data) {
@@ -149,8 +155,8 @@ var verifyDependency = function(recordarray, record) {
     for (i = 0; i < recordarray[record].info.jsonpath.length; i = i + 1) {
       var temp = recordarray[record].info.jsonpath[i];
       //read the value of temprecord
-      var tempvalue = jsonPath.eval(recordarray[temp.record]['info']['response'],
-        temp.readfrom);
+      var tempvalue = jsonPath.eval(recordarray[temp.record]['info']['response']
+        , temp.readfrom);
       if (tempvalue.length <= 0) {
         throw new Error('Unable to find ' + temp.readfrom + ' in ' + JSON.stringify(
           recordarray[temp.record]['info']['response']));
@@ -163,7 +169,7 @@ var verifyDependency = function(recordarray, record) {
       if (temp.writetopath) {
         tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
         if (tempWriteto.length <= 0) {
-          throw new Error('Unable to find jsonpath ' + temp.writeto + ' in ' +
+          throw new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
             JSON.stringify(recordarray[record].info.data));
         }
         tempWriteto = tempWriteto[0];
@@ -175,8 +181,8 @@ var verifyDependency = function(recordarray, record) {
     }
     //logInSplunk('After dependecy resolution record : ' + JSON.stringify(recordarray[record].info.data) );
     return true;
-  },
-  verifyACircular = function(graph) {
+  }
+  , verifyACircular = function(graph) {
     var node, i;
     for (node in graph) {
       if (graph[node].dependson && _.isArray(graph[node].dependson) && graph[
@@ -194,8 +200,8 @@ var verifyDependency = function(recordarray, record) {
     } catch (e) {
       return false;
     }
-  },
-  verifyAllResolved = function(graph) {
+  }
+  , verifyAllResolved = function(graph) {
     var node;
     for (node in graph) {
       if (!graph[node].resolved) {
@@ -203,20 +209,20 @@ var verifyDependency = function(recordarray, record) {
       }
     }
     return true;
-  },
-  logInSplunk = function(logmessage) {
+  }
+  , logInSplunk = function(logmessage) {
     logstring = 'module="extensionUtils" message="';
     logger.info(logstring + logmessage + '"');
-  },
-  verifyResponse = function(response) {
+  }
+  , verifyResponse = function(response) {
     if (response && response.statusCode && (response.statusCode >= 200 ||
         response.statusCode < 400)) {
       return true;
     }
     logInSplunk('Verification failed : ' + response.statusCode);
     return false;
-  },
-  makeAsyncCalls = function(recordarray, callback) {
+  }
+  , makeAsyncCalls = function(recordarray, callback) {
     logInSplunk('Making Async calls');
     if (verifyAllResolved(recordarray)) {
       logInSplunk(
@@ -225,12 +231,12 @@ var verifyDependency = function(recordarray, record) {
         success: true
       });
     }
-    var batch = [],
-      tempnode;
+    var batch = []
+      , tempnode;
 
     for (tempnode in recordarray) {
-      if (!recordarray[tempnode].resolved && verifyDependency(recordarray,
-          tempnode)) {
+      if (!recordarray[tempnode].resolved && verifyDependency(recordarray
+          , tempnode)) {
         //logInSplunk('=== ::: pushing '+JSON.stringify(recordarray[tempnode]));
         batch.push(recordarray[tempnode]);
       }
