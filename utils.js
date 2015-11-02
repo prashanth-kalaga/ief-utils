@@ -77,6 +77,7 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       opts.json = options.data;
       //if data cotains _id that means it is a put call
       if (options.data._id) {
+        //remove the _id from data
         opts.uri = opts.uri + '/' + options.data._id;
         opts.method = 'PUT';
       }
@@ -85,7 +86,6 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       }
     }
     //logInSplunk('REST call : method|' + opts.method + ', uri|' + opts.uri);
-    logInSplunk('call : \n' + JSON.stringify(opts));
     request(opts, function(error, res, body) {
       if (error) {
         return callback(new Error('Error while connecting to Integrator.io'));
@@ -102,7 +102,6 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       logInSplunk('No Auth Token was provided!');
       return callback(new Error('No Auth Token was provided!'));
     }
-
     if (!options.apiIdentifier) {
       logInSplunk('No apiIdentifier was provided!');
     }
@@ -120,28 +119,28 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     if (!!options.data) {
       opts.json = options.data;
     }
-    //logInSplunk('call : \n'+JSON.stringify(opts));
+    //logInSplunk('call API: \n' + JSON.stringify(opts));
     request(opts, function(error, res, body) {
       return callback(error, res, body);
     });
   };
 
 var verifyDependency = function(recordarray, record) {
-    //logInSplunk('verifyDependency ');
+    logInSplunk('start verifyDependency for ' + JSON.stringify(record));
     //get the dependency array and check if all are resolved in a loop
     var i;
-    if (!recordarray[record].dependson || recordarray[record].dependson.length ===
-      0) {
+    if (!recordarray[record].dependson || recordarray[record].dependson.length === 0) {
       logInSplunk('verifyDependency : no depenedency')
       return true;
     }
+    //logInSplunk('recordarray[record].dependson : ' + JSON.stringify(recordarray[record].dependson))
     for (i = 0; i < recordarray[record].dependson.length; i = i + 1) {
-      //logInSplunk('verifyDependency : i '+i)
       if (!recordarray[record].dependson[i].resolved) {
+        logInSplunk(record + ' still depend on ' + recordarray[record].dependson[i])
         return false;
       }
     }
-    logInSplunk('verifyDependency : ready to resolve')
+    logInSplunk('ready to resolve for ' + record)
     if (!recordarray[record].info.jsonpath) {
       recordarray[record].info.jsonpath = [];
     }
@@ -151,10 +150,18 @@ var verifyDependency = function(recordarray, record) {
     //            "readfrom" : "$._id",
     //            "writeto"  : "_connectionId"
     //             "writetopath" : "the json path to node where we want to add writeto"
+    //             "convertToString" : true
     //       }
     for (i = 0; i < recordarray[record].info.jsonpath.length; i = i + 1) {
       var temp = recordarray[record].info.jsonpath[i];
+      logInSplunk(JSON.stringify(temp))
+        //if readfrom and writeto both are $ replace object with incoming data
+      if (temp.readfrom === '$' && temp.writeto === '$') {
+        recordarray[record].info.data = recordarray[temp.record]['info']['response']
+        continue
+      }
       //read the value of temprecord
+      logInSplunk('tempvalue : temp.record' + recordarray[temp.record]['info']['response'] + ' temp.readfrom' + temp.readfrom)
       var tempvalue = jsonPath.eval(recordarray[temp.record]['info']['response']
         , temp.readfrom);
       if (tempvalue.length <= 0) {
@@ -176,8 +183,17 @@ var verifyDependency = function(recordarray, record) {
       } else {
         tempWriteto = recordarray[record].info.data;
       }
-      tempWriteto[temp.writeto] = tempvalue;
-      logInSplunk('setting ' + temp.writeto + ' as ' + tempvalue);
+      //if tempWriteto[temp.writeto] is an array, append tempvalue in tempWriteto[temp.writeto]
+      //convert tempvalue in the required format
+      if (temp.convertToString) {
+        tempvalue = JSON.stringify(tempvalue)
+      }
+      if (_.isArray(tempWriteto[temp.writeto])) {
+        tempWriteto[temp.writeto].push(tempvalue)
+      } else {
+        tempWriteto[temp.writeto] = tempvalue;
+      }
+      logInSplunk('setting ' + temp.writeto + ' as ' + tempWriteto[temp.writeto]);
     }
     //logInSplunk('After dependecy resolution record : ' + JSON.stringify(recordarray[record].info.data) );
     return true;
@@ -225,43 +241,74 @@ var verifyDependency = function(recordarray, record) {
   , makeAsyncCalls = function(recordarray, callback) {
     logInSplunk('Making Async calls');
     if (verifyAllResolved(recordarray)) {
-      logInSplunk(
-        '=================================All depenedency are resolved');
-      return callback(null, {
-        success: true
-      });
+      logInSplunk('All depenedency are resolved');
+      return callback(null, recordarray);
     }
     var batch = []
       , tempnode;
 
     for (tempnode in recordarray) {
-      if (!recordarray[tempnode].resolved && verifyDependency(recordarray
-          , tempnode)) {
-        //logInSplunk('=== ::: pushing '+JSON.stringify(recordarray[tempnode]));
+      if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode)) {
         batch.push(recordarray[tempnode]);
       }
     }
+    //logInSplunk('batch : ' + JSON.stringify(batch))
     //we have all non dependent record perform aysn calls here
-    async.each(batch, function(record, cb) {
+    async.eachSeries(batch, function(record, cb) {
       //we got record meta, try loading the record
       //logInSplunk('record.info :'+ JSON.stringify(record.info));
-      integratorRestClient(record.info, function(err, response, body) {
-        //logInSplunk('Posting record : ' + JSON.stringify(body));
-        if (err) {
-          //logInSplunk('Error1 : ');
-          return cb(new Error('Error while connecting to Integrator.io'));
+      if (record.info.apiIdentifier) {
+        //Can't find a better way
+        record.info.apiIdentifier = record.info.data.apiIdentifier
+        record.info.data = record.info.data.apiIdentifierData
+
+        integratorApiIdentifierClient(record.info, function(err, response, body) {
+          //logInSplunk('Posting record : ' + JSON.stringify(body));
+          if (err) {
+            //logInSplunk('Error1 : ');
+            return cb(new Error('Error while connecting to Integrator.io'));
+          }
+          if (!verifyResponse(response)) {
+            //logInSplunk('Error2 : ');
+            return cb(new Error('Unable to verify response'));
+          }
+          //this mean call was successful, now go and save the info at location info.response
+          record.info.response = body;
+          logInSplunk('record got created in ' + JSON.stringify(body));
+          //mark as resolved
+          record.resolved = true;
+          return cb(null);
+        });
+      } else {
+        //if the record.info.method === GET remove data node and use _id as id
+        //BAD WAY TO DO IT
+        //TODO find a better way
+        if (record.info.method === 'GET') {
+          if (record.info.data && record.info.data._id) {
+            record.info.id = record.info.data._id
+            delete record.info.data
+          } else {
+            return cb(new Error('The method is set GET but there is no _id in data'));
+          }
         }
-        if (!verifyResponse(response)) {
-          //logInSplunk('Error2 : ');
-          return cb(new Error('Unable to verify response'));
-        }
-        //this mean call was successful, now go and save the info at location info.response
-        record.info.response = body;
-        logInSplunk('record got created in ' + JSON.stringify(body));
-        //mark as resolved
-        record.resolved = true;
-        return cb(null);
-      });
+        integratorRestClient(record.info, function(err, response, body) {
+          //logInSplunk('Posting record : ' + JSON.stringify(body));
+          if (err) {
+            //logInSplunk('Error1 : ');
+            return cb(new Error('Error while connecting to Integrator.io'));
+          }
+          if (!verifyResponse(response)) {
+            //logInSplunk('Error2 : ');
+            return cb(new Error('Unable to verify response'));
+          }
+          //this mean call was successful, now go and save the info at location info.response
+          record.info.response = body;
+          logInSplunk('record got created in ' + JSON.stringify(body));
+          //mark as resolved
+          record.resolved = true;
+          return cb(null);
+        });
+      }
       //make a call to Integrator
       //call integrator rest client with resourceType
       //and data
@@ -272,9 +319,16 @@ var verifyDependency = function(recordarray, record) {
       //logInSplunk('calling async');
       makeAsyncCalls(recordarray, callback);
     })
-  };
+  },
 
+  loadJSON = function(filelocation) {
+    if (require.cache) {
+      delete require.cache[require.resolve('../../' + filelocation)];
+    }
+    return require('../../' + filelocation);
+  };
 exports.createRecordsInOrder = createRecordsInOrder
 exports.integratorRestClient = integratorRestClient
 exports.integratorApiIdentifierClient = integratorApiIdentifierClient
 exports.logInSplunk = logInSplunk
+exports.loadJSON = loadJSON
