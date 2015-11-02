@@ -27,11 +27,8 @@ var createRecordsInOrder = function(recordarray, options, callback) {
           'Config Error: no filelocation given in record : ' + temprecord));
       }
       if (!recordarray[temprecord].isLoaded) {
-        if (require.cache) {
-          delete require.cache[require.resolve(recordarray[temprecord].filelocation)];
-        }
-        recordarray[temprecord].info = require(recordarray[temprecord].filelocation);
-        //add bearer token in info node
+        recordarray[temprecord].info = loadJSON(recordarray[temprecord].filelocation)
+          //add bearer token in info node
         recordarray[temprecord].info.bearerToken = options.bearerToken;
       }
     }
@@ -161,17 +158,37 @@ var verifyDependency = function(recordarray, record) {
         continue
       }
       //read the value of temprecord
-      logInSplunk('tempvalue : temp.record' + recordarray[temp.record]['info']['response'] + ' temp.readfrom' + temp.readfrom)
-      var tempvalue = jsonPath.eval(recordarray[temp.record]['info']['response']
-        , temp.readfrom);
-      if (tempvalue.length <= 0) {
-        throw new Error('Unable to find ' + temp.readfrom + ' in ' + JSON.stringify(
-          recordarray[temp.record]['info']['response']));
+      //if it is not an array put that in array
+      if (!_.isArray(temp.readfrom)) {
+        var ta = []
+        ta.push({
+          readfrom: temp.readfrom
+        })
+        if (temp.record) {
+          ta[0].record = temp.record
+        }
+        temp.readfrom = ta
       }
-      tempvalue = tempvalue[0];
-      //set in record
-      //TODO: Add support for nested value writes
-      //if it doesn't start with $ mean no need to run JSONPath eval on writeto
+      //iterate over this array and create tempvalue
+      var tempvalue = ""
+      _.each(temp.readfrom, function(n) {
+          //if there is no record use value directly
+          if (!n.record) {
+            tempvalue = tempvalue + n.readfrom
+            logInSplunk('Setting hardcoded value')
+            return
+          }
+          tempJsonPath = jsonPath.eval(recordarray[n.record]['info']['response'], n.readfrom)
+          logInSplunk('finding ' + n.readfrom + ' in ' + JSON.stringify(recordarray[n.record]['info']['response']))
+          if (tempJsonPath.length <= 0) {
+            logInSplunk('Unable to find ' + n.readfrom + ' in ' + JSON.stringify(recordarray[n.record]['info']['response']))
+            tempJsonPath.push('Undefined')
+          }
+          tempvalue = tempvalue + tempJsonPath[0]
+        })
+        //set in record
+        //TODO: Add support for nested value writes
+        //if it doesn't start with $ mean no need to run JSONPath eval on writeto
       var tempWriteto;
       if (temp.writetopath) {
         tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
@@ -185,7 +202,7 @@ var verifyDependency = function(recordarray, record) {
       }
       //if tempWriteto[temp.writeto] is an array, append tempvalue in tempWriteto[temp.writeto]
       //convert tempvalue in the required format
-      if (temp.convertToString) {
+      if (temp.convertToString && typeof(tempvalue) !== "string") {
         tempvalue = JSON.stringify(tempvalue)
       }
       if (_.isArray(tempWriteto[temp.writeto])) {
@@ -254,7 +271,7 @@ var verifyDependency = function(recordarray, record) {
     }
     //logInSplunk('batch : ' + JSON.stringify(batch))
     //we have all non dependent record perform aysn calls here
-    async.eachSeries(batch, function(record, cb) {
+    async.each(batch, function(record, cb) {
       //we got record meta, try loading the record
       //logInSplunk('record.info :'+ JSON.stringify(record.info));
       if (record.info.apiIdentifier) {
