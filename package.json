@@ -1,10 +1,10 @@
 {
   "name": "ief-utils",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Integrator Extension Framework Utilities",
   "main": "utils.js",
   "engines": {
-    "node": "0.10.x"
+    "node": "0.12.x"
   },
   "author": {
     "name": "Tarun Gupta",
