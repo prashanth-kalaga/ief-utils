@@ -83,6 +83,7 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       }
     }
     //logInSplunk('REST call : method|' + opts.method + ', uri|' + opts.uri);
+    logInSplunk('REST call : json |' + JSON.stringify(opts.json));
     request(opts, function(error, res, body) {
       if (error) {
         return callback(new Error('Error while connecting to Integrator.io'));
@@ -133,7 +134,7 @@ var verifyDependency = function(recordarray, record) {
     //logInSplunk('recordarray[record].dependson : ' + JSON.stringify(recordarray[record].dependson))
     for (i = 0; i < recordarray[record].dependson.length; i = i + 1) {
       if (!recordarray[record].dependson[i].resolved) {
-        logInSplunk(record + ' still depend on ' + recordarray[record].dependson[i])
+        logInSplunk(record + ' still depend on ' + JSON.stringify(recordarray[record].dependson[i]))
         return false;
       }
     }
@@ -141,18 +142,18 @@ var verifyDependency = function(recordarray, record) {
     if (!recordarray[record].info.jsonpath) {
       recordarray[record].info.jsonpath = [];
     }
-    //      sample jsonpath object
-    //      {
-    //            "record" : "connection-netsuite",
-    //            "readfrom" : "$._id",
-    //            "writeto"  : "_connectionId"
-    //             "writetopath" : "the json path to node where we want to add writeto"
-    //             "convertToString" : true
-    //       }
+      //      sample jsonpath object
+      //      {
+      //            "record" : "connection-netsuite",
+      //            "readfrom" : "$._id",
+      //            "writeto"  : "_connectionId"
+      //             "writetopath" : "the json path to node where we want to add writeto"
+      //             "convertToString" : true
+      //       }
     for (i = 0; i < recordarray[record].info.jsonpath.length; i = i + 1) {
       var temp = recordarray[record].info.jsonpath[i];
-      logInSplunk(JSON.stringify(temp))
-        //if readfrom and writeto both are $ replace object with incoming data
+      //logInSplunk(JSON.stringify(temp))
+      //if readfrom and writeto both are $ replace object with incoming data
       if (temp.readfrom === '$' && temp.writeto === '$') {
         recordarray[record].info.data = recordarray[temp.record]['info']['response']
         continue
@@ -173,10 +174,18 @@ var verifyDependency = function(recordarray, record) {
       var tempvalue = ""
       _.each(temp.readfrom, function(n) {
           //if there is no record use value directly
+          //TODO: Hack, if the readfrom is object be can't change that in string
+          //in that case use the record as is
           if (!n.record) {
-            tempvalue = tempvalue + n.readfrom
-            logInSplunk('Setting hardcoded value')
-            return
+            if (typeof(n.readfrom) === 'object' || typeof(tempvalue) === 'object') {
+              tempvalue = n.readfrom
+              logInSplunk('Setting hardcoded an object value')
+              return
+            } else {
+              tempvalue = tempvalue + n.readfrom
+              logInSplunk('Setting hardcoded value')
+              return
+            }
           }
           tempJsonPath = jsonPath.eval(recordarray[n.record]['info']['response'], n.readfrom)
           logInSplunk('finding ' + n.readfrom + ' in ' + JSON.stringify(recordarray[n.record]['info']['response']))
@@ -265,8 +274,13 @@ var verifyDependency = function(recordarray, record) {
       , tempnode;
 
     for (tempnode in recordarray) {
-      if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode)) {
-        batch.push(recordarray[tempnode]);
+      try {
+        if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode)) {
+          batch.push(recordarray[tempnode]);
+        }
+      } catch (e) {
+        //we need to push that error message in callback
+        return callback(e)
       }
     }
     //logInSplunk('batch : ' + JSON.stringify(batch))
