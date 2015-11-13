@@ -102,6 +102,7 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     }
     if (!options.apiIdentifier) {
       logInSplunk('No apiIdentifier was provided!');
+      return callback(new Error('No apiIdentifier was provided!'))
     }
 
     var opts = {
@@ -119,11 +120,18 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     }
     //logInSplunk('call API: \n' + JSON.stringify(opts));
     request(opts, function(error, res, body) {
-      return callback(error, res, body);
+      if (error) {
+        return callback(new Error('Error while connecting to Integrator.io'));
+      }
+      if (!verifyResponse(res)) {
+        return callback(new Error('Unable to verify response'));
+      }
+      //this means success
+      return callback(null, res, body);
     });
   };
 
-var verifyDependency = function(recordarray, record) {
+var verifyDependency = function(recordarray, record, callback) {
     logInSplunk('start verifyDependency for ' + JSON.stringify(record));
     //get the dependency array and check if all are resolved in a loop
     var i;
@@ -202,8 +210,9 @@ var verifyDependency = function(recordarray, record) {
       if (temp.writetopath) {
         tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
         if (tempWriteto.length <= 0) {
-          throw new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
-            JSON.stringify(recordarray[record].info.data));
+          logInSplunk('Unable to find jsonpath ' + temp.writetopath + ' in ' + JSON.stringify(recordarray[record].info.data))
+          return callback(new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
+            JSON.stringify(recordarray[record].info.data)))
         }
         tempWriteto = tempWriteto[0];
       } else {
@@ -275,7 +284,7 @@ var verifyDependency = function(recordarray, record) {
 
     for (tempnode in recordarray) {
       try {
-        if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode)) {
+        if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode, callback)) {
           batch.push(recordarray[tempnode]);
         }
       } catch (e) {
