@@ -1,0 +1,16 @@
+{
+  "data": {
+    "name": "NetSuite Inventory to Shopify Inventory Add/Update",
+    "disabled": true
+  },
+  "resourcetype": "flows",
+  "jsonpath": [{
+    "record": "export-inventory",
+    "readfrom": "_id",
+    "writeto": "_exportId"
+  }, {
+    "record": "import-inventory",
+    "readfrom": "_id",
+    "writeto": "_importId"
+  }]
+}

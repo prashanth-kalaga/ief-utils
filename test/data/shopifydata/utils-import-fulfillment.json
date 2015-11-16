@@ -1,0 +1,42 @@
+{
+  "data": {
+    "name": "shopify-fulfillment-import-adaptor",
+    "distributed": false,
+    "mapping": {
+      "fields": [{
+        "extract": "custbody_celigo_etail_order_id",
+        "generate": "fulfillment.orderId"
+      }, {
+        "generate": "fulfillment.notify_customer",
+        "hardCodedValue": "true"
+      }, {
+        "extract": "packagetrackingnumbers",
+        "generate": "fulfillment.tracking_numbers"
+      }],
+      "lists": [{
+        "fields": [{
+          "extract": "item[*].quantity",
+          "generate": "quantity"
+        }, {
+          "extract": "item[*].custcol_celigo_etail_order_line_id",
+          "generate": "id"
+        }],
+        "generate": "fulfillment.line_items"
+      }]
+    },
+    "rest": {
+      "relativeURI": [
+        "admin/orders/{{custbody_celigo_etail_order_id}}/fulfillments.json"
+      ],
+      "method": [
+        "POST"
+      ]
+    }
+  },
+  "resourcetype": "imports",
+  "jsonpath": [{
+    "record": "connection-shopify",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

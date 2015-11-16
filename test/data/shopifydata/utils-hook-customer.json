@@ -1,0 +1,11 @@
+{
+  "data": {
+    "function": "customerImportHook"
+  },
+  "resourcetype": "hooks",
+  "jsonpath": [{
+    "record": "state",
+    "readfrom": "_stackId",
+    "writeto": "_stackId"
+  }]
+}

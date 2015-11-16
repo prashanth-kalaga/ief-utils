@@ -1,0 +1,10 @@
+{
+  "data": {
+    "type": "netsuite",
+    "name": "NetSuite Connection (Shopify Connector)"
+  },
+  "resourcetype": "connections",
+  "responseBody":{
+    "message": "succeed it"
+  }
+}

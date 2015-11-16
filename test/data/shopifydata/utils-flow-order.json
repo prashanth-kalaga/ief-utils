@@ -1,0 +1,16 @@
+{
+  "data": {
+    "name": "Shopify Order to NetSuite Order Add",
+    "disabled": true
+  },
+  "resourcetype": "flows",
+  "jsonpath": [{
+    "record": "export-order",
+    "readfrom": "_id",
+    "writeto": "_exportId"
+  }, {
+    "record": "import-order",
+    "readfrom": "_id",
+    "writeto": "_importId"
+  }]
+}

@@ -1,0 +1,20 @@
+{
+  "data": {
+    "name": "netsuite-orders-webhook-import-adaptor",
+    "distributed": true,
+    "hooks": {
+
+    }
+  },
+  "resourcetype": "imports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }, {
+    "record": "hook-customer",
+    "readfrom": "_id",
+    "writeto": "_preMapId",
+    "writetopath": "$.hooks"
+  }]
+}

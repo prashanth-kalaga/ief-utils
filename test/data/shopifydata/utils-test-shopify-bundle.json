@@ -1,0 +1,21 @@
+{
+  "data": {
+    "name": "test-shopify-bundle",
+    "asynchronous": false,
+    "netsuite": {
+      "type": "search",
+      "searches": [{
+        "searchType": {
+          "post": "searchType"
+        }
+      }],
+      "skipGrouping": false
+    }
+  },
+  "resourcetype": "exports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}
