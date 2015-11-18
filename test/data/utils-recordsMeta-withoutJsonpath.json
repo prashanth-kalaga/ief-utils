@@ -1,0 +1,11 @@
+{
+  "connection-netsuite": {
+    "dependson": [],
+    "filelocation": "./test/data/shopifydata/utils-connection-netsuite.json"
+  },
+  "export-fulfillment": {
+    "name": "shopify-netsuite-fulfillment-export-adaptor",
+    "dependson": ["connection-netsuite"],
+    "filelocation": "./test/data/utils-mock-export-fulfillment-withoutJsonpath.json"
+  }
+}

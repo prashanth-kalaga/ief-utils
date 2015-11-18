@@ -128,18 +128,77 @@ describe('VerifyDependency FUnction', function() {
 
   it('Should return success if there is no dependson property in records', function(done){
     var stubstoload = [
-      'shopifydata/utils-connection-netsuite.json'
+      'utils-mock-connection-netsuite.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-allRecordsMeta-noDependson.json');
+    var records = require('./data/utils-recordsMeta-noDependson.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
     utils.createRecordsInOrder(records, data, function(error, success){
-      var cn = 'connection-netsuite'
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
       assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       done();
     })
-
   })
+
+  it('Should return success if there is with dependson property in records', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-export-fulfillment.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-withDependson.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      done();
+    })
+  })
+  //needs assertion to be added
+  it('Should return false if resolved is false', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-export-fulfillment.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-withUnresolvedDependson.json');
+
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      console.log(error)
+      console.log(success)
+      //assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      done();
+    })
+  })
+
+  it('Should put jsonpath as [], if jsonpath is not available', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-export-fulfillment-withoutJsonpath.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-withoutJsonpath.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      assert.equal(!!success['export-fulfillment'].info.jsonpath, true, 'should set jsonpath as []')
+      done();
+    })
+  })
+
 })
