@@ -131,7 +131,7 @@ var createRecordsInOrder = function(recordarray, options, callback) {
     });
   };
 
-var verifyDependency = function(recordarray, record, callback) {
+var verifyDependency = function(recordarray, record) {
     logInSplunk('start verifyDependency for ' + JSON.stringify(record));
     //get the dependency array and check if all are resolved in a loop
     var i;
@@ -211,8 +211,8 @@ var verifyDependency = function(recordarray, record, callback) {
         tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
         if (tempWriteto.length <= 0) {
           logInSplunk('Unable to find jsonpath ' + temp.writetopath + ' in ' + JSON.stringify(recordarray[record].info.data))
-          return callback(new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
-            JSON.stringify(recordarray[record].info.data)))
+          throw new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
+-            JSON.stringify(recordarray[record].info.data))
         }
         tempWriteto = tempWriteto[0];
       } else {
@@ -266,7 +266,7 @@ var verifyDependency = function(recordarray, record, callback) {
     logger.info(logstring + logmessage + '"');
   }
   , verifyResponse = function(response) {
-    if (response && response.statusCode && (response.statusCode >= 200 ||
+    if (response && response.statusCode && (response.statusCode >= 200 &&
         response.statusCode < 400)) {
       return true;
     }
@@ -284,7 +284,7 @@ var verifyDependency = function(recordarray, record, callback) {
 
     for (tempnode in recordarray) {
       try {
-        if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode, callback)) {
+        if (!recordarray[tempnode].resolved && verifyDependency(recordarray, tempnode)) {
           batch.push(recordarray[tempnode]);
         }
       } catch (e) {
