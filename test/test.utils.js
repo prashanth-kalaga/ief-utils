@@ -139,7 +139,7 @@ describe('VerifyDependency FUnction', function() {
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
-      assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      assert.equal(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       done();
     })
   })
@@ -158,7 +158,7 @@ describe('VerifyDependency FUnction', function() {
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
-      assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      assert.equal(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       done();
     })
   })
@@ -201,4 +201,69 @@ describe('VerifyDependency FUnction', function() {
     })
   })
 
+  it('Should replace object with incoming data if readfrom and writeto both are $', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite-readWrite$.json',
+      'utils-mock-export-fulfillment-readWrite$.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-readWrite$.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      console.log(error)
+      console.log(success['connection-netsuite'].info.responseBody)
+      console.log(success['export-fulfillment'].info.data)
+      assert.deepEqual(success['export-fulfillment'].info.data, success['connection-netsuite'].info.responseBody,
+       'export-fulfillment Data should be equal to connection-netsuite responseBody')
+      done();
+    })
+  })
+
+  it('Should use value directly if there is no record', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-export-fulfillment-noRecordField.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-noRecordField.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+
+      assert.equal(success['export-fulfillment'].info.data._connectionId, '_id',
+        'should return _id')
+      done();
+    })
+  })
+  it('Should use value directly if there is no record and readFrom is object', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-export-fulfillment-noRecordReadFromObject.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-noRecordReadFromObject.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      var tmpObj = {
+        "Code": "_id"
+      }
+      assert.deepEqual(success['export-fulfillment'].info.data._connectionId, tmpObj,
+        'should return _id')
+      done();
+    })
+  })
 })
