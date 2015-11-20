@@ -150,14 +150,15 @@ var verifyDependency = function(recordarray, record) {
     if (!recordarray[record].info.jsonpath) {
       recordarray[record].info.jsonpath = [];
     }
-      //      sample jsonpath object
-      //      {
-      //            "record" : "connection-netsuite",
-      //            "readfrom" : "$._id",
-      //            "writeto"  : "_connectionId"
-      //             "writetopath" : "the json path to node where we want to add writeto"
-      //             "convertToString" : true
-      //       }
+    //      sample jsonpath object
+    //      {
+    //             "record" : "connection-netsuite",
+    //             "readfrom" : "$._id",
+    //             "writeto"  : "_connectionId"
+    //             "writetopath" : "the json path to node where we want to add writeto"
+    //             "convertToString" : true
+    //             "removeAll" : true
+    //       }
     for (i = 0; i < recordarray[record].info.jsonpath.length; i = i + 1) {
       var temp = recordarray[record].info.jsonpath[i];
       //logInSplunk(JSON.stringify(temp))
@@ -211,8 +212,7 @@ var verifyDependency = function(recordarray, record) {
         tempWriteto = jsonPath.eval(recordarray[record].info.data, temp.writetopath);
         if (tempWriteto.length <= 0) {
           logInSplunk('Unable to find jsonpath ' + temp.writetopath + ' in ' + JSON.stringify(recordarray[record].info.data))
-          throw new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' +
--            JSON.stringify(recordarray[record].info.data))
+          throw new Error('Unable to find jsonpath ' + temp.writetopath + ' in ' + JSON.stringify(recordarray[record].info.data))
         }
         tempWriteto = tempWriteto[0];
       } else {
@@ -224,6 +224,10 @@ var verifyDependency = function(recordarray, record) {
         tempvalue = JSON.stringify(tempvalue)
       }
       if (_.isArray(tempWriteto[temp.writeto])) {
+        if (temp.removeAll) {
+          //empty the array
+          tempWriteto[temp.writeto].length = 0
+        }
         tempWriteto[temp.writeto].push(tempvalue)
       } else {
         tempWriteto[temp.writeto] = tempvalue;
