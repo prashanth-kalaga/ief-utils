@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+- 0.12.7
+script:
+- make -f .travis test
+notifications:
+  slack:
+    secure: F6LsGG4J2gHaLp9xJ3BP0e9HpPhWNRGO9+rIa8V1b/k13/BfEXo3B1iynU8RDBXGqL7SbdZeRmH6+ZLh9OVpcZpLTz5IjkOKh6l12WkVxgQSy6O/VDoB9brAYk8PsT4zfirAiDCn9q2lkso0d+2zERGFPYSFZwvkc5ItO8cnlIY=
+  webhooks: https://api.integrator.io/v1/exports/55ed3cc386de45f94413d3e0/data
