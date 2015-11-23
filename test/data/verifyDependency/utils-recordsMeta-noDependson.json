@@ -1,0 +1,6 @@
+{
+  "connection-netsuite": {
+    "dependson": [],
+    "filelocation": "./test/data/common/utils-connection-netsuite.json"
+  }
+}

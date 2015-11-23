@@ -128,10 +128,10 @@ describe('VerifyDependency Function', function() {
 
   it('Should return success if there is no dependson property in records', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json'
+      'verifyDependency/utils-mock-connection-netsuite.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-noDependson.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-noDependson.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -146,11 +146,11 @@ describe('VerifyDependency Function', function() {
 
   it('Should return success if there is dependson property in records', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-export-fulfillment.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-export-fulfillment.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-withDependson.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-withDependson.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -168,11 +168,11 @@ describe('VerifyDependency Function', function() {
   //needs assertion to be added
   it('Should return false if resolved is false', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-export-fulfillment.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-export-fulfillment.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-withUnresolvedDependson.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-withUnresolvedDependson.json');
 
     var data = {}
     data.bearerToken = 'TestToken';
@@ -187,11 +187,11 @@ describe('VerifyDependency Function', function() {
 
   it('Should put jsonpath as [], if jsonpath is not available', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-export-fulfillment-withoutJsonpath.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-export-fulfillment-withoutJsonpath.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-withoutJsonpath.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-withoutJsonpath.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -206,11 +206,11 @@ describe('VerifyDependency Function', function() {
 
   it('Should replace object with incoming data if readfrom and writeto both are $', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite-readWrite$.json',
-      'utils-mock-export-fulfillment-readWrite$.json'
+      'verifyDependency/utils-mock-connection-netsuite-readWrite$.json',
+      'verifyDependency/utils-mock-export-fulfillment-readWrite$.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-readWrite$.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-readWrite$.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -229,11 +229,11 @@ describe('VerifyDependency Function', function() {
 
   it('Should use value directly if there is no record', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-export-fulfillment-noRecordField.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-export-fulfillment-noRecordField.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-noRecordField.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-noRecordField.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -249,11 +249,11 @@ describe('VerifyDependency Function', function() {
   })
   it('Should use value directly if there is no record and readFrom is object', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-export-fulfillment-noRecordReadFromObject.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-export-fulfillment-noRecordReadFromObject.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-noRecordReadFromObject.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-noRecordReadFromObject.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -271,11 +271,11 @@ describe('VerifyDependency Function', function() {
   })
   it('Should push Undefined if unable to find the readFrom value', function(done){
     var stubstoload = [
-      'utils-mock-connection-withoutIdResponse.json',
-      'utils-mock-exportData-undefinedConnection.json'
+      'verifyDependency/utils-mock-connection-withoutIdResponse.json',
+      'verifyDependency/utils-mock-exportData-undefinedConnection.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-noReadFrom.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-noReadFrom.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
@@ -291,15 +291,15 @@ describe('VerifyDependency Function', function() {
 
   it('Should throw an error if unable to find jsonpath for writetopath key', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-connection-netsuite.json',
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-noWriteToPath.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-noWriteToPath.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';
     utils.createRecordsInOrder(records, data, function(error, success){
-      var compareData = require('./data/utils-exportData-noWriteToPath.json')
+      var compareData = require('./data/verifyDependency/utils-exportData-noWriteToPath.json')
       assert.deepEqual(error, 'Unable to find jsonpath writeHere in ' + JSON.stringify(compareData.data),
         'Should return error as unable to find jsonpath')
       done();
@@ -308,11 +308,11 @@ describe('VerifyDependency Function', function() {
 
   it('Should push tempvalue if writeto property is an array', function(done){
     var stubstoload = [
-      'utils-mock-connection-netsuite.json',
-      'utils-mock-exportData-writetoArray.json'
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-exportData-writetoArray.json'
     ]
     createStubResponses(stub, stubstoload)
-    var records = require('./data/utils-recordsMeta-writetoArray.json');
+    var records = require('./data/verifyDependency/utils-recordsMeta-writetoArray.json');
     var data = {}
     data.bearerToken = 'TestToken';
     data._integrationId = '551c7be9accca83b3e00000c';

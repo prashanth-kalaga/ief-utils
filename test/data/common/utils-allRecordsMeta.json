@@ -1,73 +1,73 @@
 {
   "connection-netsuite": {
     "dependson": [],
-    "filelocation": "../../shopifydata/connection-netsuite.json"
+    "filelocation": "../../common/connection-netsuite.json"
   },
   "connection-shopify": {
     "dependson": ["state"],
-    "filelocation": "../../shopifydata/connection-shopify.json"
+    "filelocation": "../../common/connection-shopify.json"
   },
   "export-order": {
     "name": "shopify-orders-webhook-export-adaptor",
     "dependson": ["connection-shopify"],
-    "filelocation": "../../shopifydata/export-order.json"
+    "filelocation": "../../common/export-order.json"
   },
   "import-order": {
     "name": "netsuite-orders-webhook-import-adaptor",
-    "filelocation": "../../shopifydata/import-order.json",
+    "filelocation": "../../common/import-order.json",
     "dependson": ["connection-netsuite", "hook-customer"]
   },
   "flow-order": {
     "name": "Shopify Order to NetSuite Order Add",
     "dependson": ["import-order", "export-order"],
-    "filelocation": "../../shopifydata/flow-order.json"
+    "filelocation": "../../common/flow-order.json"
   },
 
   "export-fulfillment": {
     "name": "shopify-netsuite-fulfillment-export-adaptor",
     "dependson": ["connection-netsuite"],
-    "filelocation": "../../shopifydata/export-fulfillment.json"
+    "filelocation": "../../common/export-fulfillment.json"
   },
   "import-fulfillment": {
     "name": "shopify-fulfillment-import-adaptor",
-    "filelocation": "../../shopifydata/import-fulfillment.json",
+    "filelocation": "../../common/import-fulfillment.json",
     "dependson": ["connection-shopify"]
   },
   "flow-fulfillment": {
     "name": "NetSuite Fulfillment to Shopify Fulfillment Add",
     "dependson": ["import-fulfillment", "export-fulfillment"],
-    "filelocation": "../../shopifydata/flow-fulfillment.json"
+    "filelocation": "../../common/flow-fulfillment.json"
   },
 
   "export-inventory": {
     "name": "shopify-netsuite-fulfillment-export-adaptor",
     "dependson": ["connection-netsuite"],
-    "filelocation": "../../shopifydata/export-inventory.json"
+    "filelocation": "../../common/export-inventory.json"
   },
   "import-inventory": {
     "name": "shopify-fulfillment-import-adaptor",
-    "filelocation": "../../shopifydata/import-inventory.json",
+    "filelocation": "../../common/import-inventory.json",
     "dependson": ["connection-shopify"]
   },
   "flow-inventory": {
     "name": "NetSuite Inventory to Shopify Inventory Add/Update",
     "dependson": ["import-inventory", "export-inventory"],
-    "filelocation": "../../shopifydata/flow-inventory.json"
+    "filelocation": "../../common/flow-inventory.json"
   },
 
   "searchitems-adaptor": {
     "name": "shopify-searchitems-adaptor",
-    "filelocation": "../../shopifydata/searchitems-adaptor.json",
+    "filelocation": "../../common/searchitems-adaptor.json",
     "dependson": ["connection-netsuite"]
   },
   "test-adaptors": {
     "name": "test-shopify-bundle",
-    "filelocation": "../../shopifydata/test-shopify-bundle.json",
+    "filelocation": "../../common/test-shopify-bundle.json",
     "dependson": ["connection-netsuite"]
   },
   "integration": {
     "name": "integration",
-    "filelocation": "../../shopifydata/shopify-integration.json",
+    "filelocation": "../../common/shopify-integration.json",
     "dependson": ["flow-inventory", "flow-order", "flow-fulfillment",
       "flow-customer"
     ]
@@ -75,26 +75,26 @@
   "import-webhookregister": {
     "name": "shopify-webhooks-createupdate-import-adaptor",
     "dependson": ["connection-shopify"],
-    "filelocation": "../../shopifydata/import-webhookregister.json"
+    "filelocation": "../../common/import-webhookregister.json"
   },
   "hook-customer": {
     "name": "hook-customer",
     "dependson": ["state"],
-    "filelocation": "../../shopifydata/hook-customer.json"
+    "filelocation": "../../common/hook-customer.json"
   },
   "export-customer": {
     "name": "shopify-customers-webhook-export-adaptor",
     "dependson": ["connection-shopify"],
-    "filelocation": "../../shopifydata/export-customer.json"
+    "filelocation": "../../common/export-customer.json"
   },
   "import-customer": {
     "name": "netsuite-customers-webhook-import-adaptor",
-    "filelocation": "../../shopifydata/import-customer.json",
+    "filelocation": "../../common/import-customer.json",
     "dependson": ["connection-netsuite"]
   },
   "flow-customer": {
     "name": "Shopify customer to NetSuite customer Add",
     "dependson": ["import-customer", "export-customer"],
-    "filelocation": "../../shopifydata/flow-customer.json"
+    "filelocation": "../../common/flow-customer.json"
   }
 }
