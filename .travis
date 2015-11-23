@@ -5,7 +5,7 @@ ENVIRONMENT_VARIABLES = NODE_ENV=unittest
 
 test:
 	@$(ENVIRONMENT_VARIABLES) \
-	$(MOCHA) test
+	$(MOCHA) --recursive -R spec -t 15000 test
 
 debug:
 	@$(ENVIRONMENT_VARIABLES) \
