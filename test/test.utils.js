@@ -115,7 +115,7 @@ var createStubResponsesForApiIdentifiers = function(stub, allResponses) {
   });
 };
 var sandbox;
-describe('VerifyDependency FUnction', function() {
+describe('VerifyDependency Function', function() {
 
   beforeEach(function() {
     console.log('beforeEach')
@@ -144,7 +144,7 @@ describe('VerifyDependency FUnction', function() {
     })
   })
 
-  it('Should return success if there is with dependson property in records', function(done){
+  it('Should return success if there is dependson property in records', function(done){
     var stubstoload = [
       'utils-mock-connection-netsuite.json',
       'utils-mock-export-fulfillment.json'
@@ -158,7 +158,10 @@ describe('VerifyDependency FUnction', function() {
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
+      console.log(success['export-fulfillment'].info.data._connectionId)
       assert.equal(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      assert.equal(!!success['export-fulfillment'].info.data._connectionId, true,
+        'Should set tempWriteto = data if there is no writetopath')
       done();
     })
   })
@@ -263,6 +266,63 @@ describe('VerifyDependency FUnction', function() {
       }
       assert.deepEqual(success['export-fulfillment'].info.data._connectionId, tmpObj,
         'should return _id')
+      done();
+    })
+  })
+  it('Should push Undefined if unable to find the readFrom value', function(done){
+    var stubstoload = [
+      'utils-mock-connection-withoutIdResponse.json',
+      'utils-mock-exportData-undefinedConnection.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-noReadFrom.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      assert.deepEqual(success['export-fulfillment'].info.data._connectionId, 'Undefined',
+        'should return _connectionId as Undefined')
+      done();
+    })
+  })
+
+  it('Should throw an error if unable to find jsonpath for writetopath key', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-noWriteToPath.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      var compareData = require('./data/utils-exportData-noWriteToPath.json')
+      assert.deepEqual(error, 'Unable to find jsonpath writeHere in ' + JSON.stringify(compareData.data),
+        'Should return error as unable to find jsonpath')
+      done();
+    })
+  })
+
+  it('Should push tempvalue if writeto property is an array', function(done){
+    var stubstoload = [
+      'utils-mock-connection-netsuite.json',
+      'utils-mock-exportData-writetoArray.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/utils-recordsMeta-writetoArray.json');
+    var data = {}
+    data.bearerToken = 'TestToken';
+    data._integrationId = '551c7be9accca83b3e00000c';
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      console.log(success['export-fulfillment'].info.data._connectionId)
+      assert.equal(success['export-fulfillment'].info.data._connectionId[0], '1234567',
+        'Should return first index value of the array')
       done();
     })
   })
