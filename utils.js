@@ -350,7 +350,7 @@ var verifyDependency = function(recordarray, record) {
       //and data
     }, function(err) {
       if (err) {
-        return callback(new Error(JSON.stringify(err)));
+        return callback(err)
       } //everything is successful for this batch let create another
       //logInSplunk('calling async');
       makeAsyncCalls(recordarray, callback);
