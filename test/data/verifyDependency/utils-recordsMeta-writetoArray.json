@@ -1,11 +1,11 @@
 {
   "connection-netsuite": {
     "dependson": [],
-    "filelocation": "./test/data/common/utils-connection-netsuite.json"
+    "filelocation": "./data/common/utils-connection-netsuite.json"
   },
   "export-fulfillment": {
     "name": "shopify-netsuite-fulfillment-export-adaptor",
     "dependson": ["connection-netsuite"],
-    "filelocation": "./test/data/verifyDependency/utils-exportData-writetoArray.json"
+    "filelocation": "./data/verifyDependency/utils-exportData-writetoArray.json"
   }
 }

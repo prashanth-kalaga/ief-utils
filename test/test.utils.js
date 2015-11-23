@@ -1,5 +1,3 @@
-'use strict'
-
 var sinon = require('sinon')
   , logger = require('winston')
   , assert = require('assert')
@@ -19,6 +17,7 @@ mockery.enable({
 var stub = sinon.stub();
 
 mockery.registerMock('request', stub);
+
 
 var utils = require('../utils.js')
 
@@ -114,6 +113,16 @@ var createStubResponsesForApiIdentifiers = function(stub, allResponses) {
 
   });
 };
+var construct = function(records, data){
+  var temprecord;
+  for (temprecord in records) {
+    records[temprecord].isLoaded = true
+    records[temprecord].info = require(records[temprecord].filelocation)
+    records[temprecord].info.bearerToken = 'TestToken';
+  }
+  data.bearerToken = 'TestToken';
+  data._integrationId = '551c7be9accca83b3e00000c';
+}
 var sandbox;
 describe('VerifyDependency Function', function() {
 
@@ -123,7 +132,7 @@ describe('VerifyDependency Function', function() {
   });
   afterEach(function() {
     console.log('Clearing all strubs here...')
-    sandbox.restore();
+    //sandbox.restore();
   });
 
   it('Should return success if there is no dependson property in records', function(done){
@@ -133,8 +142,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noDependson.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -152,20 +160,18 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-withDependson.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
-      console.log(success['export-fulfillment'].info.data._connectionId)
       assert.equal(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       assert.equal(!!success['export-fulfillment'].info.data._connectionId, true,
         'Should set tempWriteto = data if there is no writetopath')
       done();
     })
   })
-  //needs assertion to be added
+
   it('Should return false if resolved is false', function(done){
     var stubstoload = [
       'verifyDependency/utils-mock-connection-netsuite.json',
@@ -175,12 +181,9 @@ describe('VerifyDependency Function', function() {
     var records = require('./data/verifyDependency/utils-recordsMeta-withUnresolvedDependson.json');
 
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
-      console.log(error)
-      console.log(success)
-      //assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
+      assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       done();
     })
   })
@@ -193,8 +196,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-withoutJsonpath.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -212,15 +214,11 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-readWrite$.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
-      console.log(error)
-      console.log(success['connection-netsuite'].info.responseBody)
-      console.log(success['export-fulfillment'].info.data)
       assert.deepEqual(success['export-fulfillment'].info.data, success['connection-netsuite'].info.responseBody,
        'export-fulfillment Data should be equal to connection-netsuite responseBody')
       done();
@@ -235,8 +233,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noRecordField.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -255,8 +252,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noRecordReadFromObject.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -277,8 +273,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noReadFrom.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -296,11 +291,10 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noWriteToPath.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       var compareData = require('./data/verifyDependency/utils-exportData-noWriteToPath.json')
-      assert.deepEqual(error, 'Unable to find jsonpath writeHere in ' + JSON.stringify(compareData.data),
+      assert.equal(error.message, 'Unable to find jsonpath writeHere in ' + JSON.stringify(compareData.data),
         'Should return error as unable to find jsonpath')
       done();
     })
@@ -314,13 +308,11 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-writetoArray.json');
     var data = {}
-    data.bearerToken = 'TestToken';
-    data._integrationId = '551c7be9accca83b3e00000c';
+    construct(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
       }
-      console.log(success['export-fulfillment'].info.data._connectionId)
       assert.equal(success['export-fulfillment'].info.data._connectionId[0], '1234567',
         'Should return first index value of the array')
       done();
