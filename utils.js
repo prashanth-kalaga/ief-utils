@@ -310,11 +310,7 @@ var verifyDependency = function(recordarray, record) {
           //logInSplunk('Posting record : ' + JSON.stringify(body));
           if (err) {
             //logInSplunk('Error1 : ');
-            return cb(new Error('Error while connecting to Integrator.io'));
-          }
-          if (!verifyResponse(response)) {
-            //logInSplunk('Error2 : ');
-            return cb(new Error('Unable to verify response'));
+            return cb(err);
           }
           //this mean call was successful, now go and save the info at location info.response
           record.info.response = body;
@@ -339,11 +335,7 @@ var verifyDependency = function(recordarray, record) {
           //logInSplunk('Posting record : ' + JSON.stringify(body));
           if (err) {
             //logInSplunk('Error1 : ');
-            return cb(new Error('Error while connecting to Integrator.io'));
-          }
-          if (!verifyResponse(response)) {
-            //logInSplunk('Error2 : ');
-            return cb(new Error('Unable to verify response'));
+            return cb(err);
           }
           //this mean call was successful, now go and save the info at location info.response
           record.info.response = body;
@@ -358,7 +350,7 @@ var verifyDependency = function(recordarray, record) {
       //and data
     }, function(err) {
       if (err) {
-        return callback(new Error(JSON.stringify(err)));
+        return callback(err)
       } //everything is successful for this batch let create another
       //logInSplunk('calling async');
       makeAsyncCalls(recordarray, callback);

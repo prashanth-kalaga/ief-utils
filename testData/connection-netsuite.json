@@ -1,0 +1,7 @@
+{
+  "data": {
+    "type": "netsuite",
+    "name": "NetSuite Connection (Shopify Connector)"
+  },
+  "resourcetype": "connections"
+}

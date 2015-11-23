@@ -1,0 +1,6 @@
+{
+  "connection-netsuite": {
+    "dependson": [],
+    "filelocation": "../../shopifydata/connection-netsuite.json"
+  }
+}
