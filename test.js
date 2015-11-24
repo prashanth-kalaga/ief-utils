@@ -351,7 +351,7 @@ describe('makeAsyncCalls function unit test cases.', function(){
     })
   })
   it('should call makeAsyncCalls at the end.', function(done) {
-    var metaData = require('./testData/allRecordsMetadata.json')
+    var metaData = require('./testData/allRecordsMetaData.json')
     var api = nock("http://api.localhost.io:5000")
           .post("/v1/connections")
           .reply(201, "First Time POST");
@@ -381,7 +381,7 @@ describe('makeAsyncCalls function unit test cases.', function(){
     })
   })
     it('should use GET http method(as it provided inside info block) and delete data inside info', function(done) {
-      var metaData = require('./testData/allRecordsMetadataSingleRecord.json')
+      var metaData = require('./testData/allRecordsMetaDataSingleRecord.json')
       var api = nock("http://api.localhost.io:5000")
             .get("/v1/connections/vjsdsd8sjdhj9sdj8")
             .reply(401, "GET http method has been used.")
