@@ -41,25 +41,25 @@ describe('utils.js integratorRestClient function unit test cases', function() {
   it('should use GET if no id and data is provided', function(done) {
     var api = nock("http://api.localhost.io:5000")
           .get("/v1/integrations")
-          .reply(200, "GET http method has been used used.");
+          .reply(200, "GET http method has been used.");
     utils.integratorRestClient({
             bearerToken: "dkskwqyei8767876",
             resourcetype: 'integrations'
           }, function(err, response, body) {
-            assert.equal(body, "GET http method has been used used.")
+            assert.equal(body, "GET http method has been used.")
             done()
           })
   })
   it('should use POST if no id and but data is provided', function(done) {
     var api = nock("http://api.localhost.io:5000")
           .post("/v1/integrations")
-          .reply(200, "POST http method has been used used.");
+          .reply(200, "POST http method has been used.");
     utils.integratorRestClient({
             bearerToken: "dkskwqyei8767876",
             resourcetype: 'integrations',
             data: "sample Data"
           }, function(err, response, body) {
-            assert.equal(body, "POST http method has been used used.")
+            assert.equal(body, "POST http method has been used.")
             done()
           })
   })
@@ -212,6 +212,19 @@ describe('integratorApiIdentifierClient function unit test cases!', function() {
       }
     })
   })
+  it('should return incorrect response error.', function(done) {
+    var api = nock("http://api.localhost.io:5000")
+          .post("/brv75984365865")
+          .reply(401, "POST http method has been used.");
+    utils.integratorApiIdentifierClient({
+      bearerToken: "dhkjsh876jhr3894kj8",
+      apiIdentifier: 'brv75984365865',
+      data: {"field1": "value1"}
+    }, function(err, response, body) {
+        assert.equal(err.message, 'Unable to verify response', 'Incorrect response from server was the expected result, but that does seem like case here')
+        done()
+    })
+  })
 })
 describe('createRecordsInOrder function unit test cases!', function() {
   it('loadJSON has been called once', function(done) {
@@ -337,4 +350,56 @@ describe('makeAsyncCalls function unit test cases.', function(){
       }
     })
   })
+  it('should call makeAsyncCalls at the end.', function(done) {
+    var metaData = require('./testData/allRecordsMetadata.json')
+    var api = nock("http://api.localhost.io:5000")
+          .post("/v1/connections")
+          .reply(201, "First Time POST");
+    var api = nock("http://api.localhost.io:5000")
+                .post("/v1/exports")
+                .reply(201, "Second Time POST");
+    _.each(metaData, function(record) {
+      if(record.name === "connection-shopify")
+      {
+        record.isLoaded = true,
+        record.resolved = false,
+        record.info = {"resourcetype" : "connections",
+                       "bearerToken": "dhskdh7djsd57dn",
+                       "data": {"f1" : "v1"}}
+      } else {
+        record.isLoaded = true,
+        record.resolved = false,
+        record.info = {"resourcetype" : "exports",
+                       "bearerToken": "dkskwqyei8767876",
+                       "data": {"f2": "v2"}}
+      }
+    })
+    utils.createRecordsInOrder(metaData, {}, function(error, success) {
+    assert.equal((metaData["connection-shopify"].resolved), true, 'value of resolved for connection-shopify record was supposed to be true , but is is not.')
+    assert.equal((metaData["export-order"].resolved), true, 'value of resolved for export-order record was supposed to be true , but is is not.')
+    done()
+    })
+  })
+    it('should use GET http method(as it provided inside info block) and delete data inside info', function(done) {
+      var metaData = require('./testData/allRecordsMetadataSingleRecord.json')
+      var api = nock("http://api.localhost.io:5000")
+            .get("/v1/connections/vjsdsd8sjdhj9sdj8")
+            .reply(401, "GET http method has been used.")
+
+      _.each(metaData, function(record) {
+        if(record.name === "connection-shopify")
+        {
+          record.isLoaded = true,
+          record.resolved = false,
+          record.info = {"method": "GET",
+                         "resourcetype" : "connections",
+                         "bearerToken": "dhskdh7djsd57dn",
+                         "data": {"_id" : "vjsdsd8sjdhj9sdj8"}}
+        }
+      })
+      utils.createRecordsInOrder(metaData, {}, function(error, success) {
+      assert.equal(error.message, 'Unable to verify response', 'is supposed to use GET http method using id provided inside info block, but seems like that is not the case here.')
+      done()
+   })
+ })
 })

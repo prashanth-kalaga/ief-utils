@@ -1,0 +1,12 @@
+{
+  "connection-shopify": {
+    "name": "connection-shopify",
+    "dependson": [],
+    "filelocation": "../../shopifydata/connection-shopify.json"
+  },
+  "export-order": {
+    "name": "shopify-orders-webhook-export-adaptor",
+    "dependson": ["connection-shopify"],
+    "filelocation": "../../shopifydata/export-order.json"
+  }
+}
