@@ -255,7 +255,7 @@ describe('createRecordsInOrder function unit test cases!', function() {
     })
   })
 })
-describe('loadJSON function test cases!', function() {
+ describe('loadJSON function test cases!', function() {
   it('should throw MODULE_NOT_FOUND error', function(done) {
     try {
       utils.loadJSON('./testData/allrecordsmeta.json')
