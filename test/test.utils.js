@@ -132,7 +132,7 @@ describe('VerifyDependency Function', function() {
   });
   afterEach(function() {
     console.log('Clearing all strubs here...')
-    //sandbox.restore();
+    sandbox.restore();
   });
 
   it('Should return success if there is no dependson property in records', function(done){
@@ -315,6 +315,44 @@ describe('VerifyDependency Function', function() {
       }
       assert.equal(success['export-fulfillment'].info.data._connectionId[0], '1234567',
         'Should return first index value of the array')
+      done();
+    })
+  })
+
+  it('Should add value in writtopath if writetopath exits', function(done){
+    var stubstoload = [
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-mock-exportData-withWriteToPath.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/verifyDependency/utils-recordsMeta-withWriteToPath.json');
+    var data = {}
+    construct(records, data)
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      assert.equal(!!success['export-fulfillment'].info.data.writeHere._connectionId, true,
+        'Should add a new field to writeHere Object')
+      done();
+    })
+  })
+
+  it('Should convert tempvalue as string if its not string', function(done){
+    var stubstoload = [
+      'verifyDependency/utils-mock-connection-netsuite.json',
+      'verifyDependency/utils-exportData-readFromObject.json'
+    ]
+    createStubResponses(stub, stubstoload)
+    var records = require('./data/verifyDependency/utils-recordsMeta-readFromObject.json');
+    var data = {}
+    construct(records, data)
+    utils.createRecordsInOrder(records, data, function(error, success){
+      if(error){
+        logger.debug('Test failed : ' + JSON.stringify(error));
+      }
+      assert.deepEqual(!!success['export-fulfillment'].info.data.writeHere._connectionId, true,
+       'export-fulfillment Data should be equal to connection-netsuite responseBody')
       done();
     })
   })

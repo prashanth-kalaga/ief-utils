@@ -1,0 +1,22 @@
+{
+  "data": {
+    "name": "shopify-netsuite-fulfillment-export-adaptor ",
+    "asynchronous": true,
+    "type": "distributed",
+    "writeHere":{
+
+    },
+    "distributed": {}
+  },
+  "resourcetype": "exports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId",
+    "writetopath": "writeHere"
+  }],
+  "responseBody":{
+    "_id": "1234567",
+    "_connectionId": "987654"
+  }
+}
