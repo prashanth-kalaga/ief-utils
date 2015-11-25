@@ -1,0 +1,7 @@
+{
+  "connection-shopify": {
+    "name": "connection-shopify",
+    "dependson": [],
+    "filelocation": "../../shopifydata/connection-shopify.json"
+  }
+}
