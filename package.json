@@ -10,6 +10,10 @@
     "name": "Tarun Gupta",
     "email": "tarun.gupta@celigo.com"
   },
+  "contributers": [{
+    "name": "Abhishek Jaiswal",
+    "email": "abhishek.jaiswal@celigo.com"
+  }],
   "repository": {
     "type": "git",
     "url": "https://github.com/gupta-tarun/ief-utils"
