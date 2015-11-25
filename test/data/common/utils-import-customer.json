@@ -1,0 +1,12 @@
+{
+  "data": {
+    "name": "customer-import-adaptor",
+    "distributed": true
+  },
+  "resourcetype": "imports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

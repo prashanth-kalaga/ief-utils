@@ -1,0 +1,30 @@
+{
+  "data": {
+    "name": "shopify-searchitems-adaptor",
+    "asynchronous": false,
+    "netsuite": {
+      "type": "search",
+      "searches": [{
+        "recordType": "item",
+        "criteria": [{
+          "field": "type",
+          "operator": "anyOf",
+          "searchValue": {
+            "post": "type"
+          }
+        }],
+        "columns": [
+          "internalId",
+          "itemId"
+        ]
+      }],
+      "skipGrouping": false
+    }
+  },
+  "resourcetype": "exports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

@@ -1,0 +1,125 @@
+{
+  "data": {
+    "name": "Shopify Connector for NetSuite",
+    "install": [{
+      "name": "NetSuite Connection",
+      "description": "Configure NetSuite account credentials",
+      "imageURL": "/images/company-logos/netsuite.png",
+      "completed": false,
+      "installerFunction": "verifyNetSuiteConnection"
+    }, {
+      "name": "Shopify Connection",
+      "description": "Configure Shopify store credentials",
+      "imageURL": "/images/company-logos/Shopify.png",
+      "completed": false,
+      "installerFunction": "verifyShopifyConnection"
+    }, {
+      "name": "Integrator Bundle",
+      "description": "Install Integrator Bundle in NetSuite",
+      "imageURL": "/images/company-logos/netsuite.png",
+      "installURL": "",
+      "completed": false,
+      "installerFunction": "verifyIntegratorBundleInstallation"
+    }, {
+      "name": "Shopify Bundle",
+      "description": "Install Shopify Bundle in NetSuite",
+      "imageURL": "/images/company-logos/netsuite.png",
+      "installURL": "",
+      "completed": false,
+      "installerFunction": "verifyShopifyBundleInstallation"
+    }],
+    "mode": "install",
+    "settings": {
+      "sections": [{
+        "title": "Order Sync",
+        "columns": 1,
+        "flows": [{
+          "_id": "shopify_order_flow",
+          "showMapping": true,
+          "showSchedule": false
+        }, {
+          "_id": "shopify_customer_flow",
+          "showMapping": true,
+          "showSchedule": false
+        }, {
+          "_id": "netsuite_fulfillment_flow",
+          "showMapping": true,
+          "showSchedule": false
+        }],
+        "fields": [{
+          "label": "Enable adding NetSuite fulfillments as Shopify fulfillments",
+          "type": "checkbox",
+          "name": "fulfillment_enable",
+          "value": false
+        }, {
+          "label": "Enable adding Shopify orders as NetSuite orders",
+          "type": "checkbox",
+          "name": "order_enable",
+          "value": false
+        }]
+      }, {
+        "title": "Product Sync",
+        "columns": 1,
+        "flows": [{
+          "_id": "nesuite_inventory_flow",
+          "showMapping": false,
+          "showSchedule": true
+        }],
+        "fields": [{
+          "label": "Enable updating NetSuite inventory levels in Shopify",
+          "type": "checkbox",
+          "name": "inventory_enable",
+          "value": false
+        }, {
+          "label": "NetSuite Saved Search for syncing inventory levels",
+          "value": "customsearch_celigo_shopify_invexpcomblc",
+          "type": "select",
+          "name": "inventory_export_savedSearch_searchId",
+          "supportsRefresh": true,
+          "options": [
+            [
+              "customsearch_celigo_shopify_invexpcomblc",
+              "Celigo Shopify Item Inventory Export Combined Locations Search"
+            ]
+          ]
+        }]
+      }]
+    }
+  },
+  "resourcetype": "integrations",
+  "jsonpath": [{
+    "record": "connection-shopify",
+    "readfrom": "_id",
+    "writeto": "_connectionId",
+    "writetopath": "$.install[?(@.installerFunction==\"verifyShopifyConnection\")]"
+  }, {
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId",
+    "writetopath": "$.install[?(@.installerFunction==\"verifyNetSuiteConnection\")]"
+  }, {
+    "record": "state",
+    "readfrom": "_integrationId",
+    "writeto": "_id"
+  }, {
+    "record": "flow-order",
+    "readfrom": "_id",
+    "writeto": "_id",
+    "writetopath": "$.settings.sections[?(@.title==\"Order Sync\")].flows[?(@._id==\"shopify_order_flow\")]"
+  }, {
+    "record": "flow-customer",
+    "readfrom": "_id",
+    "writeto": "_id",
+    "writetopath": "$.settings.sections[?(@.title==\"Order Sync\")].flows[?(@._id==\"shopify_customer_flow\")]"
+  }, {
+    "record": "flow-fulfillment",
+    "readfrom": "_id",
+    "writeto": "_id",
+    "writetopath": "$.settings.sections[?(@.title==\"Order Sync\")].flows[?(@._id==\"netsuite_fulfillment_flow\")]"
+  }, {
+    "record": "flow-inventory",
+    "readfrom": "_id",
+    "writeto": "_id",
+    "writetopath": "$.settings.sections[?(@.title==\"Product Sync\")].flows[?(@._id==\"nesuite_inventory_flow\")]"
+  }]
+}

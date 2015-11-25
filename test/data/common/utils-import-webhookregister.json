@@ -1,0 +1,22 @@
+{
+  "data": {
+    "name": "shopify-webhooks-createupdate-import-adaptor",
+    "distributed": false,
+    "rest": {
+      "relativeURI": [
+        "admin/webhooks/{{webhook.id}}.json",
+        "admin/webhooks.json"
+      ],
+      "method": [
+        "PUT",
+        "POST"
+      ]
+    }
+  },
+  "resourcetype": "imports",
+  "jsonpath": [{
+    "record": "connection-shopify",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

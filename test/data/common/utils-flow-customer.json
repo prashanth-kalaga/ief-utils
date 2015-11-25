@@ -1,0 +1,16 @@
+{
+  "data": {
+    "name": "Shopify Customer to NetSuite Customer Add/Update",
+    "disabled": false
+  },
+  "resourcetype": "flows",
+  "jsonpath": [{
+    "record": "export-customer",
+    "readfrom": "_id",
+    "writeto": "_exportId"
+  }, {
+    "record": "import-customer",
+    "readfrom": "_id",
+    "writeto": "_importId"
+  }]
+}

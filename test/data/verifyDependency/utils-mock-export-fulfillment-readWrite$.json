@@ -1,0 +1,19 @@
+{
+  "data": {
+    "test_id": "1234567",
+    "_connectionId": "987654"
+  },
+  "resourcetype": "exports",
+  "jsonpath": [
+    {
+      "record": "connection-netsuite",
+      "readfrom": "$",
+      "writeto": "$"
+    }
+  ],
+  "responseBody": {
+    "test_id": "1234567",
+    "_connectionId": "987654"
+  },
+  "bearerToken": "TestToken"
+}

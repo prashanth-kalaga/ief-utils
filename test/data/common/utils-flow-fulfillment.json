@@ -1,0 +1,16 @@
+{
+  "data": {
+    "name": "NetSuite Fulfillment to Shopify Fulfillment Add",
+    "disabled": true
+  },
+  "resourcetype": "flows",
+  "jsonpath": [{
+    "record": "export-fulfillment",
+    "readfrom": "_id",
+    "writeto": "_exportId"
+  }, {
+    "record": "import-fulfillment",
+    "readfrom": "_id",
+    "writeto": "_importId"
+  }]
+}
