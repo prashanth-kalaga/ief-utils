@@ -8,7 +8,9 @@ var _ = require('lodash')
   , logger = require('winston');
 
 var HERCULES_BASE_URL = 'https://api.integrator.io';
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'staging') {
+  HERCULES_BASE_URL = 'http://api.staging.integrator.io'
+} else if (process.env.NODE_ENV === 'development') {
   //local testing of code
   HERCULES_BASE_URL = 'http://api.localhost.io:5000'
 }
