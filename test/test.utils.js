@@ -113,7 +113,7 @@ var createStubResponsesForApiIdentifiers = function(stub, allResponses) {
 
   });
 };
-var construct = function(records, data){
+var initializeData = function(records, data){
   var temprecord;
   for (temprecord in records) {
     records[temprecord].isLoaded = true
@@ -142,7 +142,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noDependson.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -160,7 +160,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-withDependson.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -181,7 +181,7 @@ describe('VerifyDependency Function', function() {
     var records = require('./data/verifyDependency/utils-recordsMeta-withUnresolvedDependson.json');
 
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       assert(success['connection-netsuite'].resolved, true, 'should return resolved as true')
       done();
@@ -196,7 +196,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-withoutJsonpath.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -214,7 +214,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-readWrite$.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -233,7 +233,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noRecordField.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -252,7 +252,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noRecordReadFromObject.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -273,7 +273,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noReadFrom.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -291,7 +291,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-noWriteToPath.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       var compareData = require('./data/verifyDependency/utils-exportData-noWriteToPath.json')
       assert.equal(error.message, 'Unable to find jsonpath writeHere in ' + JSON.stringify(compareData.data),
@@ -308,7 +308,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-writetoArray.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -327,7 +327,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-withWriteToPath.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
@@ -346,7 +346,7 @@ describe('VerifyDependency Function', function() {
     createStubResponses(stub, stubstoload)
     var records = require('./data/verifyDependency/utils-recordsMeta-readFromObject.json');
     var data = {}
-    construct(records, data)
+    initializeData(records, data)
     utils.createRecordsInOrder(records, data, function(error, success){
       if(error){
         logger.debug('Test failed : ' + JSON.stringify(error));
