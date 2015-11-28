@@ -1,0 +1,26 @@
+{
+  "data": {
+    "name": "netsuite-shopify-inventory-delta-exportadaptor",
+    "asynchronous": true,
+    "type": "delta",
+    "delta": {
+      "dateField": "lastquantityavailablechange"
+    },
+    "netsuite": {
+      "type": "restlet",
+      "sortedByInternalId": false,
+      "groupByInternalId": false,
+      "skipGrouping": false,
+      "restlet": {
+        "recordType": "item",
+        "searchId": "customsearch_celigo_shopify_invexpcomblc"
+      }
+    }
+  },
+  "resourcetype": "exports",
+  "jsonpath": [{
+    "record": "connection-netsuite",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

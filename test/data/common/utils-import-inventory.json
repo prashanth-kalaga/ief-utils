@@ -1,0 +1,31 @@
+{
+  "data": {
+    "name": "shopify-inventory-import-adaptor",
+    "distributed": false,
+    "mapping": {
+      "fields": [{
+        "extract": "variantid",
+        "generate": "variant.id",
+        "dataType": "string"
+      }, {
+        "extract": "quantity",
+        "generate": "variant.inventory_quantity",
+        "dataType": "number"
+      }]
+    },
+    "rest": {
+      "relativeURI": [
+        "/admin/variants/{{variantid}}.json"
+      ],
+      "method": [
+        "PUT"
+      ]
+    }
+  },
+  "resourcetype": "imports",
+  "jsonpath": [{
+    "record": "connection-shopify",
+    "readfrom": "_id",
+    "writeto": "_connectionId"
+  }]
+}

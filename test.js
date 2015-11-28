@@ -12,7 +12,10 @@ mockery.enable({
     , warnOnUnregistered: false
     , useCleanCache: true
 });
-
+var HERCULES_BASE_URL = 'https://api.integrator.io';
+if (process.env.NODE_ENV !== 'production') {
+  HERCULES_BASE_URL = 'http://api.localhost.io:5000'
+}
 var utils = require('./utils.js')
 
 describe('utils.js integratorRestClient function unit test cases', function() {
@@ -39,32 +42,32 @@ describe('utils.js integratorRestClient function unit test cases', function() {
     }
   )})
   it('should use GET if no id and data is provided', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .get("/v1/integrations")
-          .reply(200, "GET http method has been used used.");
+          .reply(200, "GET http method has been used.");
     utils.integratorRestClient({
             bearerToken: "dkskwqyei8767876",
             resourcetype: 'integrations'
           }, function(err, response, body) {
-            assert.equal(body, "GET http method has been used used.")
+            assert.equal(body, "GET http method has been used.")
             done()
           })
   })
   it('should use POST if no id and but data is provided', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .post("/v1/integrations")
-          .reply(200, "POST http method has been used used.");
+          .reply(200, "POST http method has been used.");
     utils.integratorRestClient({
             bearerToken: "dkskwqyei8767876",
             resourcetype: 'integrations',
             data: "sample Data"
           }, function(err, response, body) {
-            assert.equal(body, "POST http method has been used used.")
+            assert.equal(body, "POST http method has been used.")
             done()
           })
   })
   it('should use PUT if id(externally) but no data is provided', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .put("/v1/integrations/4389578hi8443jhj4")
           .reply(200, "PUT http method has been used.");
     utils.integratorRestClient({
@@ -78,7 +81,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
           })
   })
   it('should use PUT if id(internally) but no data is provided', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .put("/v1/integrations/4389578hi8443jhj4")
           .reply(200, "PUT http method has been used.");
     utils.integratorRestClient({
@@ -93,7 +96,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
           })
   })
   it('distributed should be added to url , with http method GET ', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .get("/v1/integrations/4389578hi8443jhj4/distributed")
           .reply(200, "distributed has been added to url");
     utils.integratorRestClient({
@@ -107,7 +110,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
           })
   })
   it('distributed should be added to url , with http method PUT, with id provided externally', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .put("/v1/integrations/4389578hi8443jhj41/distributed")
           .reply(200, "distributed has been added to url");
     utils.integratorRestClient({
@@ -122,7 +125,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
           })
   })
   it('distributed should be added to url , with http method PUT, with id provided internally', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .put("/v1/integrations/4389578hi8443jhj42/distributed")
           .reply(200, "distributed has been added to url");
     utils.integratorRestClient({
@@ -137,7 +140,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
           })
   })
   it('distributed should be added to url , with http method POST, with no id', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .post("/v1/integrations/distributed")
           .reply(200, "distributed has been added to url");
     utils.integratorRestClient({
@@ -152,7 +155,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
   })
   it('should return incorrect response error!', function(done) {
 
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .get("/v1/integrations")
           .reply(401, "Hello World");
 
@@ -167,7 +170,7 @@ describe('utils.js integratorRestClient function unit test cases', function() {
     })
   })
   it('should not return incorrect response error!', function(done) {
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .get("/v1/integrations")
           .reply(201, "Hello World");
 
@@ -210,6 +213,19 @@ describe('integratorApiIdentifierClient function unit test cases!', function() {
         assert.equal(err.message, 'No apiIdentifier was provided!')
         done()
       }
+    })
+  })
+  it('should return incorrect response error.', function(done) {
+    var api = nock(HERCULES_BASE_URL)
+          .post("/brv75984365865")
+          .reply(401, "POST http method has been used.");
+    utils.integratorApiIdentifierClient({
+      bearerToken: "dhkjsh876jhr3894kj8",
+      apiIdentifier: 'brv75984365865',
+      data: {"field1": "value1"}
+    }, function(err, response, body) {
+        assert.equal(err.message, 'Unable to verify response', 'Incorrect response from server was the expected result, but that does seem like case here')
+        done()
     })
   })
 })
@@ -273,7 +289,7 @@ describe('createRecordsInOrder function unit test cases!', function() {
 })
 describe('makeAsyncCalls function unit test cases.', function(){
   it('if make async calls has been called', function(done){
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .post("/jhdjhs7dh67db6")
           .reply(402, "POST http method has been used.");
     var metaData = require('./testData/allrecordsmeta.json')
@@ -298,7 +314,7 @@ describe('makeAsyncCalls function unit test cases.', function(){
   })
 
   it('second block in makeAsyncCalls(integratorRestClient call)', function(done){
-    var api = nock("http://api.localhost.io:5000")
+    var api = nock(HERCULES_BASE_URL)
           .get("/v1/connections")
           .reply(402, "Hello World");
    var metaData = require('./testData/allrecordsmeta.json')
@@ -337,4 +353,56 @@ describe('makeAsyncCalls function unit test cases.', function(){
       }
     })
   })
+  it('should call makeAsyncCalls at the end.', function(done) {
+    var metaData = require('./testData/allRecordsMetaData.json')
+    var api = nock(HERCULES_BASE_URL)
+          .post("/v1/connections")
+          .reply(201, "First Time POST");
+    var api = nock(HERCULES_BASE_URL)
+                .post("/v1/exports")
+                .reply(201, "Second Time POST");
+    _.each(metaData, function(record) {
+      if(record.name === "connection-shopify")
+      {
+        record.isLoaded = true,
+        record.resolved = false,
+        record.info = {"resourcetype" : "connections",
+                       "bearerToken": "dhskdh7djsd57dn",
+                       "data": {"f1" : "v1"}}
+      } else {
+        record.isLoaded = true,
+        record.resolved = false,
+        record.info = {"resourcetype" : "exports",
+                       "bearerToken": "dkskwqyei8767876",
+                       "data": {"f2": "v2"}}
+      }
+    })
+    utils.createRecordsInOrder(metaData, {}, function(error, success) {
+    assert.equal((metaData["connection-shopify"].resolved), true, 'value of resolved for connection-shopify record was supposed to be true , but is is not.')
+    assert.equal((metaData["export-order"].resolved), true, 'value of resolved for export-order record was supposed to be true , but is is not.')
+    done()
+    })
+  })
+    it('should use GET http method(as it provided inside info block) and delete data inside info', function(done) {
+      var metaData = require('./testData/allRecordsMetaDataSingleRecord.json')
+      var api = nock(HERCULES_BASE_URL)
+            .get("/v1/connections/vjsdsd8sjdhj9sdj8")
+            .reply(401, "GET http method has been used.")
+
+      _.each(metaData, function(record) {
+        if(record.name === "connection-shopify")
+        {
+          record.isLoaded = true,
+          record.resolved = false,
+          record.info = {"method": "GET",
+                         "resourcetype" : "connections",
+                         "bearerToken": "dhskdh7djsd57dn",
+                         "data": {"_id" : "vjsdsd8sjdhj9sdj8"}}
+        }
+      })
+      utils.createRecordsInOrder(metaData, {}, function(error, success) {
+      assert.equal(error.message, 'Unable to verify response', 'is supposed to use GET http method using id provided inside info block, but seems like that is not the case here.')
+      done()
+   })
+ })
 })

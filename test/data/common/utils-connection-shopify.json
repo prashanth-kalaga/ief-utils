@@ -1,0 +1,28 @@
+{
+  "data": {
+    "type": "rest",
+    "name": "Shopify Connection",
+    "rest": {
+      "baseURI": "https://yourstorename.com/",
+      "tokenLocation": "header",
+      "mediaType": "json",
+      "authURI": "https://yourstorename.com/admin/oauth/authorize",
+      "authHeader": "X-Shopify-Access-Token",
+      "authScheme": " ",
+      "scope": [
+        "read_products",
+        "write_products",
+        "read_customers",
+        "read_orders",
+        "write_orders"
+      ]
+    }
+  },
+  "resourcetype": "connections",
+  "jsonpath": [{
+    "record": "state",
+    "readfrom": "_iClientId",
+    "writeto": "_iClientId",
+    "writetopath": "$.rest"
+  }]
+}

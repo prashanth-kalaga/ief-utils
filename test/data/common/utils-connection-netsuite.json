@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "netsuite",
+    "name": "NetSuite Connection (Shopify Connector)"
+  },
+  "resourcetype": "connections",
+  "responseBody":{
+    "_id": "1234567",
+    "_connectionId": "987654"
+  }
+}

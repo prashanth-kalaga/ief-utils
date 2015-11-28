@@ -8,7 +8,9 @@ var _ = require('lodash')
   , logger = require('winston');
 
 var HERCULES_BASE_URL = 'https://api.integrator.io';
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'staging') {
+  HERCULES_BASE_URL = 'http://api.staging.integrator.io'
+} else if (process.env.NODE_ENV === 'development') {
   //local testing of code
   HERCULES_BASE_URL = 'http://api.localhost.io:5000'
 }
@@ -49,7 +51,6 @@ var createRecordsInOrder = function(recordarray, options, callback) {
       logInSplunk('No Auth Token is given!');
       return callback(new Error('No Auth Token is given!'));
     }
-    //console.log('calling integrator for '+options.resourcetype);
     var opts = {
       uri: HERCULES_BASE_URL + '/v1/' + options.resourcetype
       , method: 'GET'
@@ -309,7 +310,6 @@ var verifyDependency = function(recordarray, record) {
         integratorApiIdentifierClient(record.info, function(err, response, body) {
           //logInSplunk('Posting record : ' + JSON.stringify(body));
           if (err) {
-            //logInSplunk('Error1 : ');
             return cb(err);
           }
           //this mean call was successful, now go and save the info at location info.response
@@ -334,7 +334,6 @@ var verifyDependency = function(recordarray, record) {
         integratorRestClient(record.info, function(err, response, body) {
           //logInSplunk('Posting record : ' + JSON.stringify(body));
           if (err) {
-            //logInSplunk('Error1 : ');
             return cb(err);
           }
           //this mean call was successful, now go and save the info at location info.response
